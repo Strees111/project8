@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
         } else {
             if (c == ' ' && i != 0) {
                 roman[i] = '\0';
-                stack[++k] = static_cast<int>(innumber(roman));
+                stack[++k] = static_cast<int>(romanToInt(roman));
                 i = 0;
             } else if (c != ' ' && c != '\n') {
                 roman[i++] = static_cast<char>(c);
@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
                     stack1[j] = '\0';
                 }
                 outfin << " = ";
-                check(stack1, outfin);
+                checkInput(stack1, outfin);
                 k = 0;
                 outfin << '\n';
             } else {
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
                 stack1[j] = '\0';
             }
             outfin << " = ";
-            check(stack1, outfin);
+            checkInput(stack1, outfin);
         }
         else {
             outfin << " = ERR";

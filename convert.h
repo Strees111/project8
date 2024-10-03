@@ -2,9 +2,9 @@
 #include <cstring>
 #include <fstream>
 
-inline void insymbol(const char *result, char arrayforsymbol[]);
+inline void convertToRoman(const char *numberStr, char romanResult[]);
 
-int romanToInt(char symbol) {
+int romanCharToInt(char symbol) {
     switch (symbol) {
         case 'I':
             return 1;
@@ -25,12 +25,12 @@ int romanToInt(char symbol) {
     }
 }
 
-inline long long innumber(const char *result) {
+inline long long romanToInt(const char *romanStr) {
     long long number = 0;
     int prevValue = 0;
 
-    for (int i = static_cast<int>(strlen(result) - 1); i >= 0; i--) {
-        int currValue = romanToInt(result[i]);
+    for (int i = static_cast<int>(strlen(romanStr) - 1); i >= 0; i--) {
+        int currValue = romanCharToInt(romanStr[i]);
 
         if (currValue < prevValue) {
             number -= currValue;
@@ -40,69 +40,83 @@ inline long long innumber(const char *result) {
 
         prevValue = currValue;
     }
+
     if (number > 3999) {
         throw "wrong integer";
     }
-    char array[128]{};
-    char array1[5]{};
-    long long number1 = number;
-    array1[0] = static_cast<char>(number1 / 1000 % 10 + '0');
-    array1[1] = static_cast<char>(number1 / 100 % 10 + '0');
-    array1[2] = static_cast<char>(number1 / 10 % 10 + '0');
-    array1[3] = static_cast<char>(number1 % 10 + '0');
-    array1[4] = '\0';
-    insymbol(array1, array);
-    for (int i = 0; array[i] != '\0' || result[i] != '\0'; ++i) {
-        if (array[i] != result[i]) {
+
+    char romanConverted[128]{};
+    char digitsStr[5]{};
+    long long tempNumber = number;
+
+    digitsStr[0] = static_cast<char>(tempNumber / 1000 % 10 + '0');
+    digitsStr[1] = static_cast<char>(tempNumber / 100 % 10 + '0');
+    digitsStr[2] = static_cast<char>(tempNumber / 10 % 10 + '0');
+    digitsStr[3] = static_cast<char>(tempNumber % 10 + '0');
+    digitsStr[4] = '\0';
+
+    convertToRoman(digitsStr, romanConverted);
+
+    for (int i = 0; romanConverted[i] != '\0' || romanStr[i] != '\0'; ++i) {
+        if (romanConverted[i] != romanStr[i]) {
             throw "wrong integer";
         }
     }
+
     return number;
 }
 
-inline void insymbol(const char *result, char arrayforsymbol[]) {
-    const char *Romannumbers1[]{"I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M"};
-    const int Romannumbers2[]{1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000};
+inline void convertToRoman(const char *numberStr, char romanResult[]) {
+    const char *romanSymbols[] = {"I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M"};
+    const int romanValues[] = {1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000};
+
     int number = 0;
-    for (int i = 0; result[i] != '\0'; ++i) {
-        number = number * 10 + (result[i] - '0');
+    for (int i = 0; numberStr[i] != '\0'; ++i) {
+        number = number * 10 + (numberStr[i] - '0');
     }
+
     if (number > 3999) {
         throw "wrong integer";
     }
-    int i = sizeof(Romannumbers2) / sizeof(Romannumbers2[0]) - 1;
+
+    int i = sizeof(romanValues) / sizeof(romanValues[0]) - 1;
     int index = 0;
-    for (; number > 0 && i >= 0; --i) {
-        while (number >= Romannumbers2[i]) {
-            for (int j = 0; Romannumbers1[i][j] != '\0'; ++j) {
-                arrayforsymbol[index++] = Romannumbers1[i][j];
+
+    while (number > 0 && i >= 0) {
+        while (number >= romanValues[i]) {
+            for (int j = 0; romanSymbols[i][j] != '\0'; ++j) {
+                romanResult[index++] = romanSymbols[i][j];
             }
-            number -= Romannumbers2[i];
+            number -= romanValues[i];
         }
+        --i;
     }
+
+    romanResult[index] = '\0';
 }
 
-void check(const char *result,std::ostream &out) {
-    int quantity = 0;
-    int quantity1 = 0;
+void checkInput(const char *inputStr, std::ostream &out) {
+    int letterCount = 0;
+    int digitCount = 0;
     int i = 0;
-    for (; result[i] != '\0'; ++i) {
-        if ((result[i] >= 'a' && result[i] <= 'z') || (result[i] >= 'A' && result[i] <= 'Z')) {
-            ++quantity;
-        } else if (result[i] - '0' >= 0 && result[i] - '0' <= 9) {
-            ++quantity1;
+
+    for (; inputStr[i] != '\0'; ++i) {
+        if ((inputStr[i] >= 'a' && inputStr[i] <= 'z') || (inputStr[i] >= 'A' && inputStr[i] <= 'Z')) {
+            ++letterCount;
+        } else if (inputStr[i] >= '0' && inputStr[i] <= '9') {
+            ++digitCount;
         }
     }
-    if ((quantity1 != i) && (quantity != i)) {
+
+    if ((digitCount != i) && (letterCount != i)) {
         throw "wrong integer";
     }
-    if (quantity1 == i) {
-        char array[128]{};
-        insymbol(result, array);
-        for (int j = 0; array[j] != '\0'; ++j) {
-            out << array[j];
-        }
-    } else if (quantity == i) {
-        out << innumber(result);
+
+    if (digitCount == i) {
+        char romanResult[128]{};
+        convertToRoman(inputStr, romanResult);
+        out << romanResult;
+    } else if (letterCount == i) {
+        out << romanToInt(inputStr);
     }
 }

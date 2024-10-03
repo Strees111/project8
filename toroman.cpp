@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
         } else if ((c == ')' || c == ' ' || c == '-' || c == '\n') && !p) {
             number[i] = '\0';
             if (atoi(number) > 0 && atoi(number) < 4000) {
-                check(number, outfin);
+                checkInput(number, outfin);
             }
             prev = c;
             outfin << c;
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     }
     if (!p) {
         number[i] = '\0';
-        check(number, outfin);
+        checkInput(number, outfin);
     }
     infin.close();
     outfin.close();
